@@ -1134,28 +1134,26 @@ const app = {
   },
 
   /* ── PART A RECAP (on its Part B) ──
-     Shows the Part A question the student just answered, the choice they
-     picked, and — if it was wrong — the right answer, because Part B asks
-     for the sentence that supports the RIGHT Part A answer. */
+     Part B keeps the test's wording ("…supports the answer to Part A?"), and
+     this box shows what that answer is: one line when the student got Part A
+     right; their answer + the correct answer when they got it wrong, because
+     Part B asks for the sentence that supports the RIGHT Part A answer. */
   _renderPrevRecap(q) {
     const el = document.getElementById('prev-answer-recap');
     if (!el) return;
     const prev = q.pairOf ? this.responses[q.pairOf] : null;
     if (!prev) { el.classList.add('hidden'); el.innerHTML = ''; return; }
-    const pick = prev.pick != null
-      ? `<div class="recap-pick-item ${prev.correct ? 'recap-right' : 'recap-wrong'}">${prev.correct ? '✅' : '❌'} “${choiceHtml(prev.pick)}”</div>`
-      : '<div class="recap-pick-item"><em>No answer recorded.</em></div>';
-    const right = prev.correct ? '' :
-      `<div class="recap-pick-label" style="margin-top:8px;">✅ The correct answer:</div>
-       <div class="recap-pick-item recap-right">“${choiceHtml(prev.answer)}”</div>`;
+    const line = (cls, label, icon, text) =>
+      `<div class="recap-line ${cls}"><span class="recap-label">${label}</span> <span class="recap-ans">${icon}“${choiceHtml(text)}”</span></div>`;
+    const lines = prev.correct
+      ? line('recap-right', '📌 The answer to Part A:', '', prev.answer)
+      : line('recap-wrong', '📌 Your answer to Part A:', '❌ ', prev.pick || '') +
+        line('recap-right', 'The correct answer to Part A:', '✅ ', prev.answer);
     el.innerHTML =
       `<div class="recap-head">
-         <button class="speak-btn recap-speak" onclick="app.speakRecap(this)" title="Read Part A aloud">🔊</button>
-         <div class="recap-title">📌 Part A — the question you just answered</div>
-       </div>
-       <div class="recap-q">${plainText(prev.stem).replace(/^Part A:\s*/, '')}</div>
-       <div class="recap-pick-label">✏️ The answer you chose:</div>
-       ${pick}${right}`;
+         <button class="speak-btn recap-speak" onclick="app.speakRecap(this)" title="Read the answer to Part A aloud">🔊</button>
+         <div class="recap-lines">${lines}</div>
+       </div>`;
     el.classList.remove('hidden');
   },
 
@@ -1343,14 +1341,14 @@ const app = {
   },
 
   /* ── SPEAK THE PART A RECAP ──
-     Reads the Part A box on a Part B: the question, the answer the student
-     chose and (when it was wrong) the correct answer. One utterance per line
-     so the word highlight stays in step; tapping again stops it. */
+     Reads the Part A box on a Part B: the answer to Part A, or (when the
+     student missed it) their answer and then the correct answer. One
+     utterance per line so the word highlight stays in step; tap again to stop. */
   speakRecap(btn) {
     if (activeSpeakBtn === btn) { stopActiveSpeech(); return; }
     stopActiveSpeech();
     const box = document.getElementById('prev-answer-recap');
-    const els = Array.from(box.querySelectorAll('.recap-title, .recap-q, .recap-pick-label, .recap-pick-item'));
+    const els = Array.from(box.querySelectorAll('.recap-line'));
     els.forEach(el => { if (!el.querySelector('.wrd')) el.innerHTML = wrapWords(el.innerHTML); });
     // each line: the words to light up + what to say (a dash is a short pause; icons are skipped)
     const lines = els.map(el => {

@@ -622,8 +622,8 @@ body.comp-active .container { max-width: 1160px; }
 }
 
 /* ── PAIRED-QUESTION RECAP BOX ─────────────────────────
-   Reminds the student of the inference question they just
-   answered + the choice they picked (for evidence questions). */
+   On a Part B: the answer to Part A (and, if the student missed
+   Part A, their answer + the correct one). */
 #prev-answer-recap {
   background: #f3e8ff;
   border: 2px solid #c79be8;
@@ -633,43 +633,23 @@ body.comp-active .container { max-width: 1160px; }
   margin-bottom: 14px;
 }
 #prev-answer-recap.hidden { display: none !important; }
-.recap-title {
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #6c3483;
-  margin-bottom: 6px;
-}
-.recap-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.recap-head .recap-title { margin-bottom: 0; }
+.recap-head { display: flex; align-items: center; gap: 12px; }
 .recap-speak { background: #fff; border-color: #c79be8; }
-.recap-q {
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #2c3e50;
-  line-height: 1.55;
-  margin-bottom: 10px;
-}
-.recap-pick-label {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #6c3483;
-  margin-bottom: 4px;
-}
-.recap-pick-item {
+.recap-lines { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.recap-line {
   background: #fff;
   border: 2px solid #d7c0ec;
   border-radius: 8px;
   padding: 8px 11px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #4a235a;
+  font-size: 0.92rem;
   line-height: 1.5;
-  margin-top: 5px;
 }
-.recap-pick-item.recap-right { border-color: #9fd8a9; background: #effaf1; color: #1e6b2e; }
-.recap-pick-item.recap-wrong { border-color: #f1b0b7; background: #fdf0f1; color: #8a1f2b; }
+.recap-label { font-weight: 800; color: #6c3483; }
+.recap-ans   { font-weight: 700; }
+.recap-line.recap-right { border-color: #9fd8a9; background: #effaf1; }
+.recap-line.recap-right .recap-ans { color: #1e6b2e; }
+.recap-line.recap-wrong { border-color: #f1b0b7; background: #fdf0f1; }
+.recap-line.recap-wrong .recap-ans { color: #8a1f2b; }
 /* ── END SCREEN ────────────────────────────────────── */
 #final-percent {
   font-size: 5rem;
