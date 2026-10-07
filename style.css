@@ -641,6 +641,9 @@ body.comp-active .container { max-width: 1160px; }
   color: #6c3483;
   margin-bottom: 6px;
 }
+.recap-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.recap-head .recap-title { margin-bottom: 0; }
+.recap-speak { background: #fff; border-color: #c79be8; }
 .recap-q {
   font-size: 0.9rem;
   font-weight: bold;

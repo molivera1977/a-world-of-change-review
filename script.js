@@ -1149,7 +1149,10 @@ const app = {
       `<div class="recap-pick-label" style="margin-top:8px;">✅ The correct answer:</div>
        <div class="recap-pick-item recap-right">“${choiceHtml(prev.answer)}”</div>`;
     el.innerHTML =
-      `<div class="recap-title">📌 Part A — the question you just answered</div>
+      `<div class="recap-head">
+         <button class="speak-btn recap-speak" onclick="app.speakRecap(this)" title="Read Part A aloud">🔊</button>
+         <div class="recap-title">📌 Part A — the question you just answered</div>
+       </div>
        <div class="recap-q">${plainText(prev.stem).replace(/^Part A:\s*/, '')}</div>
        <div class="recap-pick-label">✏️ The answer you chose:</div>
        ${pick}${right}`;
@@ -1337,6 +1340,54 @@ const app = {
     if (!reviewMode && allSectionsCompletedOnce(this.studentName)) {
       setTimeout(() => this.showScores(true), 3000);
     }
+  },
+
+  /* ── SPEAK THE PART A RECAP ──
+     Reads the Part A box on a Part B: the question, the answer the student
+     chose and (when it was wrong) the correct answer. One utterance per line
+     so the word highlight stays in step; tapping again stops it. */
+  speakRecap(btn) {
+    if (activeSpeakBtn === btn) { stopActiveSpeech(); return; }
+    stopActiveSpeech();
+    const box = document.getElementById('prev-answer-recap');
+    const els = Array.from(box.querySelectorAll('.recap-title, .recap-q, .recap-pick-label, .recap-pick-item'));
+    els.forEach(el => { if (!el.querySelector('.wrd')) el.innerHTML = wrapWords(el.innerHTML); });
+    // each line: the words to light up + what to say (a dash is a short pause; icons are skipped)
+    const lines = els.map(el => {
+      const spans = [], words = [];
+      el.querySelectorAll('.wrd').forEach(s => {
+        const t = s.textContent;
+        if (/^[—–-]$/.test(t)) { if (words.length) words[words.length - 1] += ','; return; }
+        if (!/[A-Za-z0-9]/.test(t)) return;
+        spans.push(s); words.push(t);
+      });
+      return { spans, words };
+    }).filter(l => l.spans.length);
+    if (!lines.length) return;
+    activeSpeakBtn = btn; btn.textContent = '⏹';
+    const sayLine = k => {
+      if (activeSpeakBtn !== btn) return;
+      if (k >= lines.length) { btn.textContent = '🔊'; activeSpeakBtn = null; return; }
+      const spans = lines[k].spans;
+      let text = lines[k].words.join(' ');
+      if (!/[.!?:,]["”’]?$/.test(text)) text += '.';
+      let hlIdx = 0;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US'; u.rate = 0.9;
+      u.onboundary = e => {
+        if (e.name !== 'word') return;
+        box.querySelectorAll('.wrd.hl').forEach(el => el.classList.remove('hl'));
+        if (spans[hlIdx]) spans[hlIdx].classList.add('hl');
+        hlIdx++;
+      };
+      u.onend = () => {
+        box.querySelectorAll('.wrd.hl').forEach(el => el.classList.remove('hl'));
+        sayLine(k + 1);
+      };
+      addHighlightFallback(u, spans);
+      window.speechSynthesis.speak(u);
+    };
+    sayLine(0);
   },
 
   /* ── SPEAK QUESTION ── */
