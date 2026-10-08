@@ -518,7 +518,7 @@ const app = {
     panel.innerHTML = STORY_PAGES.map(p =>
       `<figure class="story-page" data-page="${p}">
          <span class="story-page-label">Page ${p}</span>
-         <img src="assets/story/page-${p}.jpg?v=awoc1" alt="A World of Change — page ${p}" class="story-page-img">
+         <img src="assets/story/page-${p}.webp?v=pages2" alt="A World of Change — page ${p}" class="story-page-img">
        </figure>`
     ).join('');
     // Page positions are only known once the pictures load — open to the
