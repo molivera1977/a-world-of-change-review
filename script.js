@@ -501,6 +501,18 @@ function logEvent(kind, extra) {
 /* ══════════════════════════════════════════════════════
    APP OBJECT
 ══════════════════════════════════════════════════════ */
+/* ── PINNED FORM LABEL (form-label.js) ──────────────────
+   A big colored label pinned to the top of the test screens naming
+   the form or part this student is on, so Mr. O can read it from
+   across the room (Marcos 10/20). show() calls syncFormLabel(). */
+const SECTION_LABEL_LOOK = { vocab: ['📚', 'blue'], comp: ['📖', 'purple'], cloze: ['✏️', 'green'] };
+function syncFormLabel(screenId) {
+  if (!window.FormLabel) return;
+  const s = app.currentSection, look = SECTION_LABEL_LOOK[s];
+  if (!look || !['quiz-screen', 'end-screen'].includes(screenId)) return FormLabel.hide();
+  FormLabel.show(`${look[0]} ${SECTION_LABELS[s]}`, look[1]);
+}
+
 const app = {
 
   /* ── state ── */
@@ -527,6 +539,7 @@ const app = {
     ['start-screen','readaloud-screen','directions-screen','quiz-screen','end-screen','scoreboard-screen']
       .forEach(s => document.getElementById(s).classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
+    syncFormLabel(id);
     // Leaving the quiz screen always drops the two-sided Comprehension layout
     if (id !== 'quiz-screen') this._applyCompLayout(false);
     window.scrollTo(0, 0);   // every new screen starts at the top
